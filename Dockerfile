@@ -28,5 +28,7 @@ ADD . /opt/install
 RUN fix-permissions /opt/install
 
 USER $NB_USER
-RUN cd /opt/install && \
-   conda env update -n base --file environment.yml
+# Install the environment first, and then install the package separately for faster rebuilds
+COPY --chown=$NB_UID:$NB_GID environment.yml /tmp
+RUN . /opt/conda/bin/activate && \
+    mamba env update --quiet --file /tmp/environment.yml
